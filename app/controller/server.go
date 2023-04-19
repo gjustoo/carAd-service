@@ -1,6 +1,8 @@
 package controller
 
 import (
+	carAdController "fm-scrapper-go/app/controller/carAd"
+	searchQueryController "fm-scrapper-go/app/controller/query"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,26 +12,26 @@ import (
 
 var router *mux.Router
 
-func initHandlers() {
-	// we could have /api/post/{id} for GET/PUT/DELETE
-	// router.HandleFunc("/api/post/{id}", controller.{appropriateMethod}).Methods("{GET or POST or PUT")
-	// instead of what we have.  So the endpoint would be the same to read, update, and delete
-	// we'd just have different handlers for those actions
+func initCarAdHandlers() {
 
-	// router.HandleFunc("/api/posts", carAdController.GetAllPosts).Methods("GET")
-	// router.HandleFunc("/api/post/{id}", carAdController.GetPost).Methods("GET")
+	router.HandleFunc("/api/carAd/", carAdController.GetAllCarAds).Methods("GET")
+	router.HandleFunc("/api/carAd/{id}", carAdController.GetCarAd).Methods("GET")
+	router.HandleFunc("/api/carAd/", carAdController.CreateCarAd).Methods("POST")
+	router.HandleFunc("/api/carAd/{id}", carAdController.DeleteCarAd).Methods("DELETE")
+}
 
-	// router.HandleFunc("/api/post/new", carAdController.CreatePost).Methods("POST")
+func initSearchQueryHandlers() {
 
-	// router.HandleFunc("/api/post/update", carAdController.UpdatePost).Methods("PUT")
-
-	// router.HandleFunc("/api/post/delete/{id}", carAdController.DeletePost).Methods("DELETE")
+	router.HandleFunc("/api/searchQuery/", searchQueryController.GetAllSearchQueries).Methods("GET")
+	router.HandleFunc("/api/searchQuery/{id}", searchQueryController.GetSearchQuery).Methods("GET")
+	router.HandleFunc("/api/searchQuery/", searchQueryController.CreateSearchQuery).Methods("POST")
+	router.HandleFunc("/api/searchQuery/{id}", searchQueryController.DeleteSearchQuery).Methods("DELETE")
 }
 
 func Start() {
 	router = mux.NewRouter()
 
-	initHandlers()
+	initCarAdHandlers()
 	fmt.Printf("router initialized and listening on 3200\n")
 	log.Fatal(http.ListenAndServe(":3200", router))
 }

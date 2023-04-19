@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetAllQueries() ([]searchQueryModel.SearchQuery, error) {
+func GetAllSearchQueries() ([]searchQueryModel.SearchQuery, error) {
 
 	var queries []searchQueryModel.SearchQuery
 
@@ -41,4 +41,53 @@ func GetAllQueries() ([]searchQueryModel.SearchQuery, error) {
 
 	return queries, nil
 
+}
+
+func GetSearchQuery(id uint64) (searchQueryModel.SearchQuery, error) {
+
+	var query searchQueryModel.SearchQuery
+
+	session, err := db.GetDB().StartSession()
+	if err != nil {
+		return searchQueryModel.SearchQuery{}, err
+	}
+
+	defer session.EndSession(context.Background())
+
+	err = session.Client().Database("db_name").Collection("searchQueries").FindOne(context.Background(), bson.M{"id": id}).Decode(&query)
+	if err != nil {
+		return searchQueryModel.SearchQuery{}, err
+	}
+
+	return query, nil
+}
+
+func CreateSearchQuery(post searchQueryModel.SearchQuery) error {
+	session, err := db.GetDB().StartSession()
+	if err != nil {
+		return err
+	}
+	defer session.EndSession(context.Background())
+
+	_, err = session.Client().Database("db_name").Collection("searchQueries").InsertOne(context.Background(), post)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteSearchQuery(id uint64) error {
+	session, err := db.GetDB().StartSession()
+	if err != nil {
+		return err
+	}
+	defer session.EndSession(context.Background())
+
+	_, err = session.Client().Database("db_name").Collection("searchQueries").DeleteOne(context.Background(), bson.M{"id": id})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
